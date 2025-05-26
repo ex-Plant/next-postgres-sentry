@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { createTicket } from "@/actions/tickets.action";
 import { useActionState } from "react";
 
@@ -11,6 +11,11 @@ const Page = ({}: PagePropsT) => {
     success: false,
     message: "",
   });
+
+  useEffect(() => {
+    alert(state);
+    console.log(state, `🍆`);
+  }, [state]);
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded ">
