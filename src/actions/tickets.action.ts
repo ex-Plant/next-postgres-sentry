@@ -74,3 +74,55 @@ export async function createTicket(
 
   return { success: true, message: `OK` };
 }
+
+export async function getTickets() {
+  // Select * FROM Ticket ORDER BY createdAt DESC
+  try {
+    const ticketsData = await prisma.ticket.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    return ticketsData;
+
+    logSentryEvent(`Fetched tickets ok`, "tickets", { tickets: {} }, "info");
+
+    console.log(ticketsData, "tickets ");
+  } catch (e) {
+    logSentryEvent(`Tickets ❌`, "tickets", { tickets: null }, "error", e);
+
+    return [];
+  }
+}
+
+export async function getTicketById(id: string) {
+  try {
+    // Select * FROM ticket WHERE ID = id
+    // Select * FROM TICKET WHERE ID = id LIMIT 1
+    const ticketData = await prisma.ticket.findUnique({
+      where: { id: Number(id) },
+    });
+
+    // const ticket = await prisma.ticket.findFirst({
+    //   where: { subject: "Login issue" },
+    // });
+
+    if (!ticketData) {
+      logSentryEvent(
+        `Ticket not found ❌`,
+        "tickets",
+        { ticketId: id },
+        "warning",
+      );
+    }
+    return ticketData;
+  } catch (e) {
+    logSentryEvent(
+      `Get ticket err ❌`,
+      "tickets",
+      { ticketId: id },
+      "error",
+      e,
+    );
+    return null;
+  }
+}
