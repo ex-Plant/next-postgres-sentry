@@ -34,6 +34,7 @@ model User {
   email String @unique
   name String
   surname String
+  password String
   createdAt DateTime @default(now())
   // automatically store updated at time
   updatedAt DateTime @updatedAt

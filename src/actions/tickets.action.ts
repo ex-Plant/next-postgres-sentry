@@ -3,15 +3,15 @@ import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/app/db/prisma";
 import { logSentryEvent } from "@/utils/sentrY";
 import { revalidatePath } from "next/cache";
-type FormState = {
+export type ActionResT = {
   success: boolean;
   message: string;
 };
 
 export async function createTicket(
-  prevState: FormState,
+  prevState: ActionResT,
   formData: FormData,
-): Promise<FormState> {
+): Promise<ActionResT> {
   console.log(1);
 
   try {
