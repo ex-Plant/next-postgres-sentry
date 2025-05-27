@@ -2,6 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { logSentryEvent } from "@/utils/sentrY";
 import { cookies } from "next/headers";
 import { AuthPayload } from "@/actions/users.actions";
+import { redirect } from "next/navigation";
 
 const secret = process.env.AUTH_SECRET;
 const secretEncoded = new TextEncoder().encode(secret);

@@ -5,6 +5,7 @@ import { logSentryEvent } from "@/utils/sentrY";
 import { prisma } from "@/app/db/prisma";
 import bcrypt from "bcryptjs";
 import { deleteAuthCookie, setAuthCookie, signAuthToken } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export async function registerUser(
   prevState: ActionResT,

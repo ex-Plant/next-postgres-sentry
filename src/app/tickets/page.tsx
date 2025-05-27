@@ -1,15 +1,14 @@
 import { getTickets, deleteTicket } from "@/actions/tickets.action";
 import Link from "next/link";
 import { TicketsListTicket } from "@/app/components/TicketsList.Ticket";
+import { redirect } from "next/navigation";
 
 type PagePropsT = {};
 
 const TicketsP = async ({}: PagePropsT) => {
   const { tickets, success, message } = await getTickets();
 
-  if (!tickets) {
-    return <>Create an account to see your tickets</>;
-  }
+  if (!tickets) redirect(`/login`);
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">

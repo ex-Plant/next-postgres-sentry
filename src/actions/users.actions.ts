@@ -3,6 +3,7 @@
 import { authenticate, getAuthCookie, verifyAuthToken } from "@/lib/auth";
 import { ActionResT } from "@/actions/tickets.action";
 import { prisma } from "@/app/db/prisma";
+import { redirect } from "next/navigation";
 
 export type GetUserRes = {
   data?: {

@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useActionState } from "react";
-import { createTicket } from "@/actions/tickets.action";
+import { ActionResT, createTicket } from "@/actions/tickets.action";
 
 const NewTicketForm = () => {
-  const [state, formAction] = useActionState(createTicket, {
-    message: "Init message",
-    success: false,
-  });
+  const initState: ActionResT = {
+    success: `pending`,
+    message: "",
+  };
+
+  const [state, formAction] = useActionState(createTicket, initState);
 
   //
   // useEffect(() => {

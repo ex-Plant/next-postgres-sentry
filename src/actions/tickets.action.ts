@@ -5,6 +5,7 @@ import { logSentryEvent } from "@/utils/sentrY";
 import { revalidatePath } from "next/cache";
 import { authenticate } from "@/lib/auth";
 import { Ticket } from "@/generated/prisma";
+import { redirect } from "next/navigation";
 export type ActionResT = {
   success: "pending" | "ok" | "failed";
   message: string;
@@ -15,6 +16,16 @@ export async function createTicket(
   formData: FormData,
 ): Promise<ActionResT> {
   console.log(1);
+
+  const { payload, success, message } = await authenticate();
+
+  // if (payload) {
+  //   redirect(`/213`);
+  // }
+
+  if (!payload) {
+    return { success: "failed", message: message };
+  }
 
   try {
     const subject = formData.get(`subject`) as string;
@@ -53,8 +64,6 @@ export async function createTicket(
     console.log(3, `creating ticket...`);
 
     console.log(ticketData);
-    revalidatePath(`/tickets`, "page");
-
     return { success: "ok", message: `Ticket created 🚀` };
 
     // throw new Error(`🚨 test err`);
@@ -88,6 +97,8 @@ export async function getTickets(): Promise<
   try {
     const { payload, success, message } = await authenticate();
 
+    console.log(`asdf`);
+
     if (!payload) {
       return {
         tickets: null,
@@ -114,7 +125,7 @@ export async function getTickets(): Promise<
   } catch (e) {
     console.log(e);
   }
-  logSentryEvent(`Tickets ❌`, "tickets", { tickets: null }, "error", e);
+  logSentryEvent(`Tickets ❌`, "tickets", { tickets: null }, "error");
 
   return {
     tickets: null,

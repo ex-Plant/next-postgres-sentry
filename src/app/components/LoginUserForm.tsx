@@ -1,12 +1,10 @@
 "use client";
 import React, { useActionState, useEffect } from "react";
 import { ActionResT } from "@/actions/tickets.action";
-import { logInUser, registerUser } from "@/actions/auth.actions";
+import { logInUser } from "@/actions/auth.actions";
 import { toast } from "sonner";
 
-type LoginUserFormPropsT = {};
-
-export const LoginUserForm = ({}: LoginUserFormPropsT) => {
+export const LoginUserForm = () => {
   const initState: ActionResT = {
     success: `pending`,
     message: "",
@@ -16,7 +14,10 @@ export const LoginUserForm = ({}: LoginUserFormPropsT) => {
 
   useEffect(() => {
     if (state.success === "pending") return;
-    if (state.success === "ok") toast.success(`Ok ✅`);
+    if (state.success === "ok") {
+      toast.success(`Ok ✅`);
+      return;
+    }
     toast.error(`Something went wrong 🚨 ` + state.message);
   }, [state]);
 
@@ -24,7 +25,7 @@ export const LoginUserForm = ({}: LoginUserFormPropsT) => {
     <>
       <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded ">
         <h2 className="text-2xl font-bold mb-6 text-center text-black">
-          Log in
+          LogIn
         </h2>
         {state.message && state.success === "failed" && (
           <p className={`text-red-200`}>{state.message}</p>
