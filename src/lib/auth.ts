@@ -26,13 +26,14 @@ export async function testAuth() {
 export async function signAuthToken(payload: any) {
   try {
     const token = await new SignJWT(payload)
-      .setProtectedHeader({ alg: "sha256" })
+      .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("7d")
       .setIssuedAt()
       .sign(secretEncoded);
     return token;
   } catch (e) {
     logSentryEvent("SignAuthToken failed", "auth", { payload }, "error");
+    console.log(e);
     throw new Error(`Token signing failed`);
   }
 }

@@ -4,7 +4,7 @@ import { prisma } from "@/app/db/prisma";
 import { logSentryEvent } from "@/utils/sentrY";
 import { revalidatePath } from "next/cache";
 export type ActionResT = {
-  success: boolean;
+  success: "pending" | "ok" | "failed";
   message: string;
 };
 
@@ -34,7 +34,7 @@ export async function createTicket(
       // Sentry.captureMessage(`ll fields should be filled, {
       //   level: "warning",
       // });
-      return { success: false, message: message };
+      return { success: "failed", message: message };
     }
 
     const ticketData = await prisma.ticket.create({
@@ -51,7 +51,7 @@ export async function createTicket(
     console.log(3, `creating ticket...`);
 
     console.log(ticketData);
-    return { success: true, message: `Ticket created 🚀` };
+    return { success: "ok", message: `Ticket created 🚀` };
 
     // throw new Error(`🚨 test err`);
   } catch (error) {
@@ -70,10 +70,10 @@ export async function createTicket(
     //   extra: { formData: Object.fromEntries(formData.entries()) },
     // });
     console.log(error);
-    return { success: false, message: message };
+    return { success: "failed", message: message };
   }
 
-  return { success: true, message: `OK` };
+  return { success: "ok", message: `OK` };
 }
 
 export async function getTickets() {
@@ -83,11 +83,11 @@ export async function getTickets() {
       orderBy: { createdAt: "desc" },
     });
 
-    return ticketsData;
-
     logSentryEvent(`Fetched tickets ok`, "tickets", { tickets: {} }, "info");
 
     console.log(ticketsData, "tickets ");
+
+    return ticketsData;
   } catch (e) {
     logSentryEvent(`Tickets ❌`, "tickets", { tickets: null }, "error", e);
 

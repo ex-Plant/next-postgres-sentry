@@ -23,7 +23,7 @@ export async function registerUser(
         { data: Object.fromEntries(formData.entries()) },
         "warning",
       );
-      return { success: false, message: "Missing form data" };
+      return { success: "ok", message: "Missing form data" };
     }
 
     const user = await prisma.user.findUnique({
@@ -39,7 +39,7 @@ export async function registerUser(
       );
 
       return {
-        success: false,
+        success: "failed",
         message: "registration failed - user already exists: " + user.email,
       };
     }
@@ -49,9 +49,9 @@ export async function registerUser(
 
     const newUser = await prisma.user.create({
       data: {
-        email: "",
-        name: "",
-        surname: "",
+        email,
+        name,
+        surname,
         password: hashePass,
       },
     });
@@ -68,8 +68,9 @@ export async function registerUser(
 
     logSentryEvent("registering user ok ✅", "auth", { email }, "info");
 
-    return { success: true, message: `User: ${name} ${surname} registered 🚀` };
+    return { success: "ok", message: `User: ${name} ${surname} registered 🚀` };
   } catch (e) {
+    console.log(e, `❌`);
     logSentryEvent(
       "registering user failed",
       "auth",
@@ -78,6 +79,6 @@ export async function registerUser(
       e,
     );
 
-    return { success: false, message: "Registering user failed" };
+    return { success: "failed", message: "Registering user failed" };
   }
 }
