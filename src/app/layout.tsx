@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import Link from "next/link";
 import { testAuth } from "@/lib/auth";
 import { getUser } from "@/actions/users.actions";
+import { Navbar } from "@/app/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,18 +28,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // testAuth();
-  const user = await getUser();
 
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <nav className={`flex gap-4 p-4`}>
-          <Link href={`/tickets`}>tickets list</Link>
-          <Link href={`/tickets/new`}>new ticket</Link>
-          {!user && <Link href={`/register`}>Register</Link>}
-        </nav>
+        <Navbar />
+
         {children}
         <Toaster position={`bottom-center`} />
       </body>

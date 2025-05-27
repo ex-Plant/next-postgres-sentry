@@ -5,8 +5,11 @@ import { TicketsListTicket } from "@/app/components/TicketsList.Ticket";
 type PagePropsT = {};
 
 const TicketsP = async ({}: PagePropsT) => {
-  const tickets = (await getTickets()) ?? [];
-  tickets.sort((a, b) => a.id - b.id);
+  const { tickets, success, message } = await getTickets();
+
+  if (!tickets) {
+    return <>Create an account to see your tickets</>;
+  }
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">

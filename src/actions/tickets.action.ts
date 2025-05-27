@@ -3,6 +3,8 @@ import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/app/db/prisma";
 import { logSentryEvent } from "@/utils/sentrY";
 import { revalidatePath } from "next/cache";
+import { authenticate } from "@/lib/auth";
+import { Ticket } from "@/generated/prisma";
 export type ActionResT = {
   success: "pending" | "ok" | "failed";
   message: string;
@@ -51,6 +53,8 @@ export async function createTicket(
     console.log(3, `creating ticket...`);
 
     console.log(ticketData);
+    revalidatePath(`/tickets`, "page");
+
     return { success: "ok", message: `Ticket created 🚀` };
 
     // throw new Error(`🚨 test err`);
@@ -76,10 +80,24 @@ export async function createTicket(
   return { success: "ok", message: `OK` };
 }
 
-export async function getTickets() {
+export async function getTickets(): Promise<
+  { tickets: Ticket[] | null } & Partial<ActionResT>
+> {
   // Select * FROM Ticket ORDER BY createdAt DESC
+
   try {
+    const { payload, success, message } = await authenticate();
+
+    if (!payload) {
+      return {
+        tickets: null,
+        message: message,
+        success: success,
+      };
+    }
+
     const ticketsData = await prisma.ticket.findMany({
+      where: { userId: payload.userId },
       orderBy: { createdAt: "desc" },
     });
 
@@ -87,12 +105,22 @@ export async function getTickets() {
 
     console.log(ticketsData, "tickets ");
 
-    return ticketsData;
-  } catch (e) {
-    logSentryEvent(`Tickets ❌`, "tickets", { tickets: null }, "error", e);
+    ticketsData.sort((a, b) => a.id - b.id);
 
-    return [];
+    return {
+      tickets: ticketsData,
+      success: "ok",
+    };
+  } catch (e) {
+    console.log(e);
   }
+  logSentryEvent(`Tickets ❌`, "tickets", { tickets: null }, "error", e);
+
+  return {
+    tickets: null,
+    success: "failed",
+    message: "Something went wrong see console",
+  };
 }
 
 export async function deleteTicket(id: number) {

@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { logSentryEvent } from "@/utils/sentrY";
 import { cookies } from "next/headers";
+import { AuthPayload } from "@/actions/users.actions";
 
 const secret = process.env.AUTH_SECRET;
 const secretEncoded = new TextEncoder().encode(secret);
@@ -46,6 +47,7 @@ export async function verifyAuthToken<T>(token: string): Promise<T> {
 
     return payload as T;
   } catch (e) {
+    console.log(e);
     logSentryEvent(
       "verifyAuthToken failed",
       "auth",
@@ -71,6 +73,7 @@ export async function setAuthCookie(token: string, cookieName: string) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
   } catch (e) {
+    console.log(e);
     logSentryEvent(
       "setAuthCookie failed",
       "auth",
@@ -88,6 +91,7 @@ export async function getAuthCookie(cookieName: string) {
     const storedToken = cookieStore.get(cookieName);
     return storedToken?.value;
   } catch (e) {
+    console.log(e);
     logSentryEvent("getAuthCookie failed", "auth", { cookieName }, "error");
     throw new Error("setAuthCookie failed");
   }
@@ -98,7 +102,30 @@ export async function deleteAuthCookie(cookieName: string) {
     const cookiesStore = await cookies();
     cookiesStore.delete(cookieName);
   } catch (e) {
+    console.log(e);
     logSentryEvent("deleteAuthCookie failed", "auth", { cookieName }, "error");
     throw new Error("deleteAuthCookie failed");
   }
+}
+
+export async function authenticate(): Promise<{
+  payload: AuthPayload | null;
+  message: string;
+  success: "failed" | "ok";
+}> {
+  const tokenFromCookie = await getAuthCookie("auth-cookie");
+
+  if (!tokenFromCookie) {
+    return { message: "No token", payload: null, success: "failed" };
+  }
+
+  // console.log({ tokenFromCookie });
+
+  const payload = await verifyAuthToken<AuthPayload>(tokenFromCookie);
+
+  if (!payload) {
+    return { message: "No payload", payload: null, success: "failed" };
+  }
+
+  return { message: "OK", payload: payload, success: "ok" };
 }
