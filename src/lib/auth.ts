@@ -2,7 +2,6 @@ import { SignJWT, jwtVerify } from "jose";
 import { logSentryEvent } from "@/utils/sentrY";
 import { cookies } from "next/headers";
 import { AuthPayload } from "@/actions/users.actions";
-import { redirect } from "next/navigation";
 
 const secret = process.env.AUTH_SECRET;
 const secretEncoded = new TextEncoder().encode(secret);
@@ -18,11 +17,6 @@ const secretEncoded = new TextEncoder().encode(secret);
  Summary:
  try/catch + rethrow = error still propagates, but you can log or enrich it at the point of failure.
  No try/catch */
-
-export async function testAuth() {
-  console.log(`testing auth`);
-  console.log(secret);
-}
 
 // create sigh auth token - this will encrypt and sign token
 export async function signAuthToken(payload: any) {
@@ -109,7 +103,7 @@ export async function deleteAuthCookie(cookieName: string) {
   }
 }
 
-export async function authenticate(): Promise<{
+export async function verifySession(): Promise<{
   payload: AuthPayload | null;
   message: string;
   success: "failed" | "ok";

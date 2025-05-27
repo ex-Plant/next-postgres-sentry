@@ -3,7 +3,7 @@ import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/app/db/prisma";
 import { logSentryEvent } from "@/utils/sentrY";
 import { revalidatePath } from "next/cache";
-import { authenticate } from "@/lib/auth";
+import { verifySession } from "@/lib/auth";
 import { Ticket } from "@/generated/prisma";
 import { redirect } from "next/navigation";
 export type ActionResT = {
@@ -17,7 +17,7 @@ export async function createTicket(
 ): Promise<ActionResT> {
   console.log(1);
 
-  const { payload, success, message } = await authenticate();
+  const { payload, success, message } = await verifySession();
 
   // if (payload) {
   //   redirect(`/213`);
@@ -61,9 +61,6 @@ export async function createTicket(
       "info",
     );
 
-    console.log(3, `creating ticket...`);
-
-    console.log(ticketData);
     return { success: "ok", message: `Ticket created 🚀` };
 
     // throw new Error(`🚨 test err`);
@@ -95,9 +92,7 @@ export async function getTickets(): Promise<
   // Select * FROM Ticket ORDER BY createdAt DESC
 
   try {
-    const { payload, success, message } = await authenticate();
-
-    console.log(`asdf`);
+    const { payload, success, message } = await verifySession();
 
     if (!payload) {
       return {

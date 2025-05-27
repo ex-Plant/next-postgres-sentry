@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticate, getAuthCookie, verifyAuthToken } from "@/lib/auth";
+import { verifySession, getAuthCookie, verifyAuthToken } from "@/lib/auth";
 import { ActionResT } from "@/actions/tickets.action";
 import { prisma } from "@/app/db/prisma";
 import { redirect } from "next/navigation";
@@ -21,7 +21,7 @@ export async function getUser(): Promise<GetUserRes> {
   console.log("executing getUser...");
 
   try {
-    const { payload, success, message } = await authenticate();
+    const { payload, success, message } = await verifySession();
 
     if (!payload) {
       return {

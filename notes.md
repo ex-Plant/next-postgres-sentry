@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=NKiTlo_dgb8&t=6861s
+
 **USING PRISMA **
 
 1.  npx prisma init
@@ -78,6 +80,6 @@ to do that we will create some low-level functions
 high level functions
 
 - register user / add user
-- login user - authenticate user with credentials, add cookie
+- login user - verifySession user with credentials, add cookie
 - logout - remove token, cookie etc
 - getCurrUser - get logged user

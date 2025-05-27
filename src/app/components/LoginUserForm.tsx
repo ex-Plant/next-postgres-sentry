@@ -1,5 +1,5 @@
 "use client";
-import React, { useActionState, useEffect } from "react";
+import React, { useActionState, useEffect, useTransition } from "react";
 import { ActionResT } from "@/actions/tickets.action";
 import { logInUser } from "@/actions/auth.actions";
 import { toast } from "sonner";
@@ -10,16 +10,34 @@ export const LoginUserForm = () => {
     message: "",
   };
 
-  const [state, formAction] = useActionState(logInUser, initState);
+  const [state, formAction, pending] = useActionState(logInUser, initState);
 
-  useEffect(() => {
-    if (state.success === "pending") return;
-    if (state.success === "ok") {
-      toast.success(`Ok ✅`);
-      return;
-    }
-    toast.error(`Something went wrong 🚨 ` + state.message);
-  }, [state]);
+  const [isPending, startTransition] = useTransition();
+
+  function handleSubmit(formData: FormData) {
+    console.log(`handleSubmit`);
+    startTransition(async () => {
+      const result = await logInUser(initState, formData);
+
+      // Toast shows immediately after server action completes
+      if (result.success === "ok") {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    });
+  }
+
+  console.log(pending);
+  // useEffect(() => {
+  //   if (state.success === "pending") return;
+  // if (state.success === "ok") {
+  //   toast.success(`Ok ✅`);
+  // }
+  // if (state.success === "failed") {
+  //   toast.error(`Something went wrong 🚨 ` + state.message);
+  // }
+  // }, [state]);
 
   return (
     <>
@@ -33,7 +51,7 @@ export const LoginUserForm = () => {
         {state.message && state.success === "ok" && (
           <p className={`text-green-200`}>{state.message}</p>
         )}
-        <form action={formAction} className="flex flex-col gap-4 text-black">
+        <form action={handleSubmit} className="flex flex-col gap-4 text-black">
           <label className="flex flex-col gap-1">
             <span className="font-semibold">email</span>
             <input
