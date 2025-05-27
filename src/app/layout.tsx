@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <nav className={`flex gap-4 p-4`}>
+          <Link href={`/tickets`}>tickets list</Link>
+          <Link href={`/tickets/new`}>new ticket</Link>
+        </nav>
         {children}
         <Toaster position={`bottom-center`} />
       </body>

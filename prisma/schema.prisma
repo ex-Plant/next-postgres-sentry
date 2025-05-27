@@ -22,4 +22,21 @@ model Ticket {
   status String @default("Open")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  userId String
+  //create relation to table User
+  user User @relation(fields: [userId], references: [id])
+}
+
+//@id - primary key
+model User {
+  // unique id cuid
+  id String @id @default(cuid())
+  email String @unique
+  name String
+  surname String
+  createdAt DateTime @default(now())
+  // automatically store updated at time
+  updatedAt DateTime @updatedAt
+  tickets Ticket[]
+
 }

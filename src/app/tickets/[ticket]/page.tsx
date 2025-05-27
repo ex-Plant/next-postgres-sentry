@@ -1,5 +1,7 @@
 import { getTicketById } from "@/actions/tickets.action";
 import type { Ticket } from "@/generated/prisma";
+import NotFound from "next/dist/client/components/not-found-error";
+import { notFound } from "next/navigation";
 
 type PagePropsT = {
   params: Promise<{ ticket: string }>;
@@ -41,7 +43,7 @@ const Page = async (props: PagePropsT) => {
   const params = await props.params;
   const ticketData = await getTicketById(params.ticket);
 
-  if (!ticketData) return <>😭</>;
+  if (!ticketData) return notFound();
 
   return <TicketDetailPage ticketData={ticketData} />;
 };

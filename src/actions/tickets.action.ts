@@ -2,6 +2,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/app/db/prisma";
 import { logSentryEvent } from "@/utils/sentrY";
+import { revalidatePath } from "next/cache";
 type FormState = {
   success: boolean;
   message: string;
@@ -91,6 +92,21 @@ export async function getTickets() {
     logSentryEvent(`Tickets ❌`, "tickets", { tickets: null }, "error", e);
 
     return [];
+  }
+}
+
+export async function deleteTicket(id: number) {
+  console.log(`deleting ticket`);
+  try {
+    const data = await prisma.ticket.delete({
+      where: { id: id },
+    });
+    console.log(data, "data");
+    revalidatePath(`/tickets`, "page");
+    return { success: true, message: "Deleted!" };
+  } catch (e) {
+    console.log(e);
+    return { success: false, message: "Deletion failed" };
   }
 }
 
