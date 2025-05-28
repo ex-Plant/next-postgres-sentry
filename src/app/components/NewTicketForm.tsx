@@ -26,12 +26,12 @@ const NewTicketForm = () => {
       <h2 className="text-2xl font-bold mb-6 text-center text-black">
         Submit a New Ticket
       </h2>
-      {state.message && !state.success && (
-        <p className={`text-red-200`}>{state.message}</p>
-      )}
-      {state.message && state.success && (
-        <p className={`text-green-200`}>{state.message}</p>
-      )}
+      {/*{state.message && !state.success && (*/}
+      {/*  <p className={`text-red-200`}>{state.message}</p>*/}
+      {/*)}*/}
+      {/*{state.message && state.success && (*/}
+      {/*  <p className={`text-green-200`}>{state.message}</p>*/}
+      {/*)}*/}
       <form action={formAction} className="flex flex-col gap-4 text-black">
         <label className="flex flex-col gap-1">
           <span className="font-semibold">subject</span>

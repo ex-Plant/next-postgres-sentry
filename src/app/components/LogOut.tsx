@@ -26,6 +26,7 @@ export const LogOut = ({}) => {
 
   return (
     <form action={formAction}>
+      <div>asdfas</div>
       <button>Log out 👋</button>
     </form>
   );

@@ -1,4 +1,10 @@
 https://www.youtube.com/watch?v=NKiTlo_dgb8&t=6861s
+It is basically a step by setp guide based on next.js docs 
+MIDDELWARE MIGHT NOT BE THE BEST PLACE TO CHECK AUTHENTICATION
+dal - data access layer - verify session
+
+- redirect
+
 
 **USING PRISMA **
 

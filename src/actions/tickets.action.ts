@@ -1,31 +1,21 @@
 "use server";
-import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/app/db/prisma";
 import { logSentryEvent } from "@/utils/sentrY";
 import { revalidatePath } from "next/cache";
 import { verifySession } from "@/lib/auth";
 import { Ticket } from "@/generated/prisma";
-import { redirect } from "next/navigation";
+
 export type ActionResT = {
   success: "pending" | "ok" | "failed";
   message: string;
 };
 
 export async function createTicket(
-  prevState: ActionResT,
+  prevState: ActionResT | null,
   formData: FormData,
-): Promise<ActionResT> {
-  console.log(1);
-
-  const { payload, success, message } = await verifySession();
-
-  // if (payload) {
-  //   redirect(`/213`);
-  // }
-
-  if (!payload) {
-    return { success: "failed", message: message };
-  }
+): Promise<ActionResT | null> {
+  const payload = await verifySession();
+  if (!payload) return null;
 
   try {
     const subject = formData.get(`subject`) as string;
@@ -87,21 +77,13 @@ export async function createTicket(
 }
 
 export async function getTickets(): Promise<
-  { tickets: Ticket[] | null } & Partial<ActionResT>
+  ({ tickets: Ticket[] | null } & Partial<ActionResT>) | null
 > {
   // Select * FROM Ticket ORDER BY createdAt DESC
+  const payload = await verifySession();
+  if (!payload) return null;
 
   try {
-    const { payload, success, message } = await verifySession();
-
-    if (!payload) {
-      return {
-        tickets: null,
-        message: message,
-        success: success,
-      };
-    }
-
     const ticketsData = await prisma.ticket.findMany({
       where: { userId: payload.userId },
       orderBy: { createdAt: "desc" },
@@ -109,7 +91,7 @@ export async function getTickets(): Promise<
 
     logSentryEvent(`Fetched tickets ok`, "tickets", { tickets: {} }, "info");
 
-    console.log(ticketsData, "tickets ");
+    // console.log(ticketsData, "tickets ");
 
     ticketsData.sort((a, b) => a.id - b.id);
 
@@ -132,10 +114,10 @@ export async function getTickets(): Promise<
 export async function deleteTicket(id: number) {
   console.log(`deleting ticket`);
   try {
-    const data = await prisma.ticket.delete({
+    await prisma.ticket.delete({
       where: { id: id },
     });
-    console.log(data, "data");
+    // console.log(data, "data");
     revalidatePath(`/tickets`, "page");
     return { success: true, message: "Deleted!" };
   } catch (e) {

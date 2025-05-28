@@ -4,9 +4,7 @@ import { LogOut } from "@/app/components/LogOut";
 
 export const Navbar = async () => {
   const user = await getUser();
-  console.log(user);
-
-  const isLoggedIn = user.data;
+  const isLoggedIn = user?.data;
 
   return (
     <>

@@ -1,28 +1,40 @@
 "use client";
-import React, { useActionState, useEffect } from "react";
+import React, { useTransition } from "react";
 import { ActionResT } from "@/actions/tickets.action";
 import { registerUser } from "@/actions/auth.actions";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-type RegisterUserFormPropsT = {};
+/*
+ *
+ * k
+ * a
+ * ka@gmail.com
+ * test
+ * */
 
-export const RegisterUserForm = ({}: RegisterUserFormPropsT) => {
+export const RegisterUserForm = () => {
   const initState: ActionResT = {
     success: `pending`,
     message: "",
   };
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const [state, formAction] = useActionState(registerUser, initState);
+  async function handleRegister(formData: FormData) {
+    startTransition(async () => {
+      const res = await registerUser(initState, formData);
+      console.log(res, "res");
 
-  useEffect(() => {
-    if (state.success === "pending") return;
-    if (state.success) {
-      toast.success(`Ok`);
-    }
-    if (!state.success) {
-      toast.error(`Something went wrong 🚨:` + state.message);
-    }
-  }, [state]);
+      if (res.success === "ok") {
+        toast.success(`User registered 🚀`);
+        router.push(`/tickets`);
+      }
+      if (res.success === "failed") {
+        toast.error(`Something went wrong 🚨:` + res.message);
+      }
+    });
+  }
 
   return (
     <>
@@ -30,13 +42,10 @@ export const RegisterUserForm = ({}: RegisterUserFormPropsT) => {
         <h2 className="text-2xl font-bold mb-6 text-center text-black">
           Register account
         </h2>
-        {state.message && !state.success && (
-          <p className={`text-red-200`}>{state.message}</p>
-        )}
-        {state.message && state.success && (
-          <p className={`text-green-200`}>{state.message}</p>
-        )}
-        <form action={formAction} className="flex flex-col gap-4 text-black">
+        <form
+          action={handleRegister}
+          className="flex flex-col gap-4 text-black"
+        >
           <label className="flex flex-col gap-1">
             <span className="font-semibold">name</span>
             <input
@@ -81,7 +90,7 @@ export const RegisterUserForm = ({}: RegisterUserFormPropsT) => {
             type="submit"
             className="bg-pink-600 text-white py-2 rounded hover:bg-pink-700 transition font-semibold"
           >
-            Register
+            {isPending ? "..." : "Register"}
           </button>
         </form>
       </div>

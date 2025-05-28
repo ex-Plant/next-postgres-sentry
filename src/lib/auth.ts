@@ -2,6 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { logSentryEvent } from "@/utils/sentrY";
 import { cookies } from "next/headers";
 import { AuthPayload } from "@/actions/users.actions";
+import { redirect } from "next/navigation";
 
 const secret = process.env.AUTH_SECRET;
 const secretEncoded = new TextEncoder().encode(secret);
@@ -78,49 +79,43 @@ export async function setAuthCookie(token: string, cookieName: string) {
     throw new Error("setAuthCookie failed");
   }
 }
+//
+// export async function deleteAuthCookie(cookieName: string) {
+//   try {
+//     (await cookies()).delete("auth-cookie");
+//   } catch (e) {
+//     console.log(e);
+//     logSentryEvent("deleteAuthCookie failed", "auth", { cookieName }, "error");
+//     throw new Error("deleteAuthCookie failed");
+//   }
+// }
 
-export async function getAuthCookie(cookieName: string) {
-  try {
-    const cookieStore = await cookies();
+export async function verifySession(): Promise<AuthPayload | null> {
+  // const tokenFromCookie = await getAuthCookie("auth-cookie");
+  // immediately awaited expression i
+  const token = (await cookies()).get("auth-cookie")?.value;
 
-    const storedToken = cookieStore.get(cookieName);
-    return storedToken?.value;
-  } catch (e) {
-    console.log(e);
-    logSentryEvent("getAuthCookie failed", "auth", { cookieName }, "error");
-    throw new Error("setAuthCookie failed");
+  if (!token) {
+    console.log("❌ No auth cookie found redirecting to login...  ");
+    redirect("/login");
   }
+
+  const payload = await verifyAuthToken<AuthPayload>(token);
+
+  if (!payload) return null;
+
+  return payload;
 }
 
-export async function deleteAuthCookie(cookieName: string) {
-  try {
-    const cookiesStore = await cookies();
-    cookiesStore.delete(cookieName);
-  } catch (e) {
-    console.log(e);
-    logSentryEvent("deleteAuthCookie failed", "auth", { cookieName }, "error");
-    throw new Error("deleteAuthCookie failed");
-  }
-}
-
-export async function verifySession(): Promise<{
-  payload: AuthPayload | null;
-  message: string;
-  success: "failed" | "ok";
-}> {
-  const tokenFromCookie = await getAuthCookie("auth-cookie");
-
-  if (!tokenFromCookie) {
-    return { message: "No token", payload: null, success: "failed" };
-  }
-
-  // console.log({ tokenFromCookie });
-
-  const payload = await verifyAuthToken<AuthPayload>(tokenFromCookie);
-
-  if (!payload) {
-    return { message: "No payload", payload: null, success: "failed" };
-  }
-
-  return { message: "OK", payload: payload, success: "ok" };
-}
+// export async function getAuthCookie(cookieName: string) {
+//   try {
+//     const cookieStore = await cookies();
+//
+//     const storedToken = cookieStore.get(cookieName);
+//     return storedToken?.value;
+//   } catch (e) {
+//     console.log(e);
+//     logSentryEvent("getAuthCookie failed", "auth", { cookieName }, "error");
+//     throw new Error("setAuthCookie failed");
+//   }
+// }

@@ -3,6 +3,8 @@ import React, { useActionState, useEffect, useTransition } from "react";
 import { ActionResT } from "@/actions/tickets.action";
 import { logInUser } from "@/actions/auth.actions";
 import { toast } from "sonner";
+import Link from "next/link";
+import { LoginLink } from "@/app/components/LoginLink";
 
 export const LoginUserForm = () => {
   const initState: ActionResT = {
@@ -28,7 +30,7 @@ export const LoginUserForm = () => {
     });
   }
 
-  console.log(pending);
+  // console.log(pending);
   // useEffect(() => {
   //   if (state.success === "pending") return;
   // if (state.success === "ok") {
@@ -78,6 +80,11 @@ export const LoginUserForm = () => {
           >
             Login
           </button>
+          <LoginLink
+            txt1={"Don`t have an account yet?"}
+            txt2={"Register new account 🚀"}
+            link={"/register"}
+          />
         </form>
       </div>
     </>

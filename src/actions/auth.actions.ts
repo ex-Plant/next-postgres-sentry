@@ -4,8 +4,8 @@ import { ActionResT } from "@/actions/tickets.action";
 import { logSentryEvent } from "@/utils/sentrY";
 import { prisma } from "@/app/db/prisma";
 import bcrypt from "bcryptjs";
-import { deleteAuthCookie, setAuthCookie, signAuthToken } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { setAuthCookie, signAuthToken } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 export async function registerUser(
   prevState: ActionResT,
@@ -180,7 +180,7 @@ export async function logInUser(
 export async function logOutUser() {
   console.log(`logOutUser`);
   try {
-    await deleteAuthCookie("auth-cookie");
+    (await cookies()).delete("auth-cookie");
     logSentryEvent("logging out  ok ", "auth", { data: null }, "info");
 
     return { success: "ok", message: "You've been logged out 👋" };

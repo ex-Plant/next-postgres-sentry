@@ -2,10 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-import Link from "next/link";
-import { testAuth } from "@/lib/auth";
-import { getUser } from "@/actions/users.actions";
-import { Navbar } from "@/app/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,15 +23,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // testAuth();
+  // const headersList = headers();
+  // const pathname = headersList.get("x-pathname") || "";
+  // const isLoginPage = pathname === "/login";
 
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-
         {children}
         <Toaster position={`bottom-center`} />
       </body>

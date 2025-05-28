@@ -1,19 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const pathname = request.nextUrl.pathname;
 
+  //
   const token = request.cookies.get("auth-cookie")?.value;
-
-  console.log(`token`, token);
 
   if (pathname === "/login") {
     return NextResponse.next();
   }
 
+  console.log(token);
+
   if (!token) {
+    console.log("🚧 !token in req  - redirecting to login ");
+
     // Not authenticated, redirect to /login
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (pathname === "/") {
+    const ticketsPath = new URL("/tickets", request.url);
+    console.log("🚧 redirecting from home to: " + ticketsPath);
+
+    return NextResponse.redirect(ticketsPath);
   }
 
   // Avoid infinite loop by excluding /home and static assets

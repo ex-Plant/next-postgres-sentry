@@ -1,11 +1,10 @@
 import { getTickets } from "@/actions/tickets.action";
 import { TicketsListTicket } from "@/app/components/TicketsList.Ticket";
-import { notFound, redirect } from "next/navigation";
 
 const TicketsP = async () => {
-  const { tickets, success, message } = await getTickets();
-
-  if (!tickets) notFound();
+  const data = await getTickets();
+  if (!data?.tickets) return null;
+  const { tickets } = data;
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">
