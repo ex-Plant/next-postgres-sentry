@@ -1,10 +1,19 @@
 "use client";
-import React, { useActionState, useEffect, useTransition } from "react";
+import React, { useTransition } from "react";
 import { ActionResT } from "@/actions/tickets.action";
 import { logInUser } from "@/actions/auth.actions";
 import { toast } from "sonner";
-import Link from "next/link";
 import { LoginLink } from "@/app/components/LoginLink";
+import { useRouter } from "next/navigation";
+import { SubmitBtn } from "@/app/components/SubmitBtn";
+
+/*
+ *
+ * k
+ * a
+ * ka@gmail.com
+ * test
+ * */
 
 export const LoginUserForm = () => {
   const initState: ActionResT = {
@@ -12,7 +21,7 @@ export const LoginUserForm = () => {
     message: "",
   };
 
-  const [state, formAction, pending] = useActionState(logInUser, initState);
+  const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
 
@@ -24,22 +33,12 @@ export const LoginUserForm = () => {
       // Toast shows immediately after server action completes
       if (result.success === "ok") {
         toast.success(result.message);
+        router.push(`/tickets`);
       } else {
         toast.error(result.message);
       }
     });
   }
-
-  // console.log(pending);
-  // useEffect(() => {
-  //   if (state.success === "pending") return;
-  // if (state.success === "ok") {
-  //   toast.success(`Ok ✅`);
-  // }
-  // if (state.success === "failed") {
-  //   toast.error(`Something went wrong 🚨 ` + state.message);
-  // }
-  // }, [state]);
 
   return (
     <>
@@ -47,12 +46,6 @@ export const LoginUserForm = () => {
         <h2 className="text-2xl font-bold mb-6 text-center text-black">
           LogIn
         </h2>
-        {state.message && state.success === "failed" && (
-          <p className={`text-red-200`}>{state.message}</p>
-        )}
-        {state.message && state.success === "ok" && (
-          <p className={`text-green-200`}>{state.message}</p>
-        )}
         <form action={handleSubmit} className="flex flex-col gap-4 text-black">
           <label className="flex flex-col gap-1">
             <span className="font-semibold">email</span>
@@ -74,12 +67,9 @@ export const LoginUserForm = () => {
               // required
             />
           </label>
-          <button
-            type="submit"
-            className="bg-pink-600 text-white py-2 rounded hover:bg-pink-700 transition font-semibold"
-          >
-            Login
-          </button>
+
+          <SubmitBtn btnTxt={`Login`} isPending={isPending} />
+
           <LoginLink
             txt1={"Don`t have an account yet?"}
             txt2={"Register new account 🚀"}

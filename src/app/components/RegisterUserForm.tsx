@@ -5,14 +5,7 @@ import { registerUser } from "@/actions/auth.actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { LoginLink } from "@/app/components/LoginLink";
-
-/*
- *
- * k
- * a
- * ka@gmail.com
- * test
- * */
+import { SubmitBtn } from "@/app/components/SubmitBtn";
 
 export const RegisterUserForm = () => {
   const initState: ActionResT = {
@@ -87,12 +80,7 @@ export const RegisterUserForm = () => {
               // required
             />
           </label>
-          <button
-            type="submit"
-            className="bg-pink-600 text-white py-2 rounded hover:bg-pink-700 transition font-semibold"
-          >
-            {isPending ? "..." : "Register"}
-          </button>
+          <SubmitBtn btnTxt={`Register`} isPending={isPending} />
           <LoginLink
             txt1={"Already have an account?"}
             txt2={"Login 🚀"}
