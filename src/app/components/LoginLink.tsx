@@ -11,9 +11,9 @@ export const LoginLink = ({ link, txt1, txt2 }: LoginLinkPropsT) => {
   return (
     <>
       <div className={`text-nowrap`}>
-        <div>Don`t have an account yet?</div>
-        <Link href={`/register`} className={`w-full text-blue-500`}>
-          Register new account 🚀
+        <div>{txt1}</div>
+        <Link href={link} className={`w-full text-blue-500`}>
+          {txt2}
         </Link>
       </div>
     </>

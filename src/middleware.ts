@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   //
   const token = request.cookies.get("auth-cookie")?.value;
 
-  if (pathname === "/login") {
+  if (pathname === "/login" || pathname === "/register") {
     return NextResponse.next();
   }
 

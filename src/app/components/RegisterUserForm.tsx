@@ -4,6 +4,7 @@ import { ActionResT } from "@/actions/tickets.action";
 import { registerUser } from "@/actions/auth.actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { LoginLink } from "@/app/components/LoginLink";
 
 /*
  *
@@ -92,6 +93,11 @@ export const RegisterUserForm = () => {
           >
             {isPending ? "..." : "Register"}
           </button>
+          <LoginLink
+            txt1={"Already have an account?"}
+            txt2={"Login 🚀"}
+            link={"/login"}
+          />
         </form>
       </div>
     </>
