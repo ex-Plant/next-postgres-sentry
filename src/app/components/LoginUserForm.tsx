@@ -32,7 +32,7 @@ export const LoginUserForm = () => {
 
       // Toast shows immediately after server action completes
       if (result.success === "ok") {
-        toast.success(result.message);
+        toast.success(`You were successfully logged in 🚀`);
         router.push(`/tickets`);
       } else {
         toast.error(result.message);

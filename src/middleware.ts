@@ -6,11 +6,17 @@ export function middleware(request: NextRequest) {
   //
   const token = request.cookies.get("auth-cookie")?.value;
 
-  if (pathname === "/login" || pathname === "/register") {
+  // Avoid infinite loop by excluding /home and static assets
+  if (
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/home" ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/api/") ||
+    pathname.includes(".")
+  ) {
     return NextResponse.next();
   }
-
-  console.log(token);
 
   if (!token) {
     console.log("🚧 !token in req  - redirecting to login ");
@@ -25,19 +31,6 @@ export function middleware(request: NextRequest) {
 
     return NextResponse.redirect(ticketsPath);
   }
-
-  // Avoid infinite loop by excluding /home and static assets
-  // if (
-  //   pathname === "/home" ||
-  //   pathname.startsWith("/_next/") ||
-  //   pathname.startsWith("/api/") ||
-  //   pathname.includes(".")
-  // ) {
-  //   return NextResponse.next();
-  // }
-  //
-  // // Redirect all other requests to /home
-  // return NextResponse.redirect(new URL("/home", request.url));
 }
 
 export const config = {

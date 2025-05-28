@@ -25,8 +25,7 @@ export const LogOut = ({}) => {
   }, [state, router]);
 
   return (
-    <form action={formAction}>
-      <div>asdfas</div>
+    <form className={`ml-auto`} action={formAction}>
       <button>Log out 👋</button>
     </form>
   );
