@@ -10,6 +10,87 @@ export type ActionResT = {
   message: string;
 };
 
+async function sleep() {
+  return new Promise((resolve) => {
+    console.log(`sleeping`);
+    setTimeout(() => {
+      console.log(`sleep is over 🫠`);
+      resolve();
+    }, 2000);
+  });
+}
+
+export async function createTicketAction(formData: FormData): Promise<void> {
+  const payload = await verifySession();
+  if (!payload) return;
+  console.log(`createTicketAction`);
+
+  await sleep();
+
+  try {
+    const subject = formData.get(`subject`) as string;
+    const description = formData.get(`description`) as string;
+    const priority = formData.get(`priority`) as string;
+
+    console.log(formData);
+    console.log(subject, description, priority);
+
+    // ℹ️ optional add sentry log
+    if (!subject || !description || !priority) {
+      const message = "❌ All fields should be filled";
+      console.log(subject, description, priority, message);
+
+      logSentryEvent(
+        message,
+        "ticket",
+        { subject, description, priority },
+        "warning",
+      );
+
+      // Sentry.captureMessage(`ll fields should be filled, {
+      //   level: "warning",
+      // });
+      // return { success: "failed", message: message };
+    }
+
+    const ticketData = await prisma.ticket.create({
+      data: {
+        subject,
+        description,
+        priority,
+        userId: payload.userId, // Add the userId from the session
+      },
+    });
+
+    logSentryEvent(
+      `Ticket was created: ${ticketData.id}`,
+      "ticket",
+      { ticketId: ticketData.id },
+      "info",
+    );
+
+    // return { success: "ok", message: `Ticket created 🚀` };
+
+    // throw new Error(`🚨 test err`);
+  } catch (error) {
+    const message = "🚨 Error while creating the ticket";
+
+    // ℹ️ capture errors and pass it to sentry
+    logSentryEvent(
+      message,
+      "ticket",
+      Object.fromEntries(formData.entries()),
+      "error",
+      error,
+    );
+
+    // Sentry.captureException(error, {
+    //   extra: { formData: Object.fromEntries(formData.entries()) },
+    // });
+    console.log(error);
+  }
+}
+
 export async function createTicket(
   prevState: ActionResT | null,
   formData: FormData,
@@ -34,14 +115,16 @@ export async function createTicket(
         "warning",
       );
 
-      // Sentry.captureMessage(`ll fields should be filled, {
-      //   level: "warning",
-      // });
       return { success: "failed", message: message };
     }
 
     const ticketData = await prisma.ticket.create({
-      data: { subject, description, priority },
+      data: {
+        subject,
+        description,
+        priority,
+        userId: payload.userId, // Add the userId from the session
+      },
     });
 
     logSentryEvent(

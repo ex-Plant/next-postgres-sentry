@@ -1,42 +1,48 @@
 "use client";
 
-import React, { useActionState } from "react";
+import React, { useActionState, useOptimistic } from "react";
 import {
   ActionResT,
   createTicket,
   createTicketAction,
 } from "@/actions/tickets.action";
 import { useFormStatus } from "react-dom";
+import NewTicketFormBtn from "@/app/components/NewTicketFormBtn";
+import { Ticket } from "@/generated/prisma";
 
-const NewTicketForm = () => {
-  const initState: ActionResT = {
-    success: `pending`,
-    message: "",
-  };
+type OptimisticTicket = Partial<Ticket> & {
+  subject: string;
+  description: string;
+  priority: string;
+};
 
-  const { pending, action, data } = useFormStatus();
+const NewTicketV2 = () => {
+  const [optimisticTickets, addOptimisticTicket] = useOptimistic<
+    OptimisticTicket[],
+    OptimisticTicket
+  >([], (state, newTicket) => [...state, newTicket]);
 
-  console.log({ data });
-  console.log(pending);
+  console.log(optimisticTickets);
 
-  // console.log(pending, action, data);
+  async function formAction(formData: FormData) {
+    const newTicket: OptimisticTicket = {
+      subject: formData.get("subject") as string,
+      description: formData.get("description") as string,
+      priority: formData.get("priority") as string,
+    };
 
-  const [state, formAction] = useActionState(createTicket, initState);
+    addOptimisticTicket(newTicket);
+    await createTicketAction(formData);
+  }
 
-  //
-  // useEffect(() => {
-  //   console.log(state, "state");
-  //   if (state.success) {
-  //     toast.success(`😎`);
-  //     router.push(`/tickets`);
-  //   }
-  //   console.log(state, `🍆`);
-  // }, [state]);
+  async function addTicket(formDAta: FormData) {
+    await formAction(formDAta);
+  }
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded ">
       <h2 className="text-2xl font-bold mb-6 text-center text-black">
-        Submit a New Ticket§
+        Submit a New Ticket version2
       </h2>
       {/*{state.message && !state.success && (*/}
       {/*  <p className={`text-red-200`}>{state.message}</p>*/}
@@ -44,7 +50,7 @@ const NewTicketForm = () => {
       {/*{state.message && state.success && (*/}
       {/*  <p className={`text-green-200`}>{state.message}</p>*/}
       {/*)}*/}
-      <form action={formAction} className="flex flex-col gap-4 text-black">
+      <form action={addTicket} className="flex flex-col gap-4 text-black">
         {/*<form action={formAction} className="flex flex-col gap-4 text-black">*/}
         <label className="flex flex-col gap-1">
           <span className="font-semibold">subject</span>
@@ -76,15 +82,16 @@ const NewTicketForm = () => {
             // required
           />
         </label>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-semibold"
-        >
-          Submit Ticket
-        </button>
+        <NewTicketFormBtn />
       </form>
+      <div>
+        {optimisticTickets.map((t) => (
+          <>{t.description}</>
+        ))}
+      </div>
+      ;
     </div>
   );
 };
 
-export default NewTicketForm;
+export default NewTicketV2;
