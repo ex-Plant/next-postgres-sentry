@@ -15,7 +15,7 @@ async function sleep() {
     console.log(`sleeping`);
     setTimeout(() => {
       console.log(`sleep is over 🫠`);
-      resolve();
+      return resolve;
     }, 2000);
   });
 }

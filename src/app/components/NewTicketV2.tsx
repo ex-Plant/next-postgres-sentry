@@ -1,12 +1,7 @@
 "use client";
 
-import React, { useActionState, useOptimistic } from "react";
-import {
-  ActionResT,
-  createTicket,
-  createTicketAction,
-} from "@/actions/tickets.action";
-import { useFormStatus } from "react-dom";
+import React, { useOptimistic } from "react";
+import { createTicketAction } from "@/actions/tickets.action";
 import NewTicketFormBtn from "@/app/components/NewTicketFormBtn";
 import { Ticket } from "@/generated/prisma";
 
@@ -84,6 +79,8 @@ const NewTicketV2 = () => {
         </label>
         <NewTicketFormBtn />
       </form>
+      {/* optimistic ticket will be added during form submission and than will be swapped after
+       successful form submission*/}
       <div>
         {optimisticTickets.map((t) => (
           <>{t.description}</>
